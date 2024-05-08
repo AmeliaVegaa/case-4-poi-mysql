@@ -16,7 +16,8 @@ function createMarkers(data) {
             Kepala Sekolah: ${place.kepala_sekolah}<br>
             Jumlah Guru: ${place.jumlah_guru}<br>
             Jumlah Murid: ${place.jumlah_murid}<br>
-            Keterangan: ${place.keterangan}
+            Keterangan: ${place.keterangan}<br>
+            <button onclick="deleteMarker(${place.id})">Hapus</button>
         `;
         marker.bindPopup(popupContent);
         marker.on('dragend', function(event) {
@@ -29,6 +30,33 @@ function createMarkers(data) {
             showUpdatePopup(place, lat, lng);
         });
     });
+}
+
+// Function to delete marker and corresponding data
+function deleteMarker(id) {
+    if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
+        fetch('hapus.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `id=${id}`,
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(data => {
+            console.log(data);
+            // Refresh the page after deleting marker and data
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+    }
 }
 
 // Function to handle map clicks
