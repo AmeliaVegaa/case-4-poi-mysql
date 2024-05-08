@@ -1,28 +1,24 @@
 <?php
 include "koneksi.php";
 
-if(isset($_POST['lat']) && isset($_POST['lng'])) {
-    $lat = $_POST['lat'];
-    $lng = $_POST['lng'];
+// Marker ID received from the client-side
+$id = $_POST['id'];
 
-    $sql = "DELETE FROM poi WHERE latitude = ? AND longitude = ?";
-
-    $stmt = $con->prepare($sql);
-
-    $stmt->bind_param("dd", $lat, $lng);
-
-    if ($stmt->execute()) {
-        $response = array('status' => 'success', 'message' => 'Data berhasil dihapus');
-    } else {
-        $response = array('status' => 'error', 'message' => 'Gagal menghapus data');
-    }
-
-    $stmt->close();
-} else {
-    $response = array('status' => 'error', 'message' => 'Latitude dan longitude tidak ditemukan');
+if ($con->connect_error) {
+    die("Connection failed: " . $con->connect_error);
 }
 
-echo json_encode($response);
+$stmt = $con->prepare("DELETE FROM data WHERE id = ?");
+$stmt->bind_param("i", $id);
 
-mysqli_close($con);
+// Execute the DELETE statement
+if ($stmt->execute()) {
+    echo "Record deleted successfully";
+} else {
+    echo "Error deleting record: " . $con->error;
+}
+
+// Close statement and connection
+$stmt->close();
+$con->close();
 ?>
